@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_3" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.3">
+    <Header>
+        <Application name="JPMML-SparkML" version="1.4.6"/>
+        <Timestamp>2018-12-06T11:50:46Z</Timestamp>
+    </Header>
+    <DataDictionary>
+        <DataField name="next_month" optype="categorical" dataType="integer">
+            <Value value="0"/>
+            <Value value="1"/>
+        </DataField>
+        <DataField name="pay_0" optype="continuous" dataType="integer"/>
+        <DataField name="pay_2" optype="continuous" dataType="integer"/>
+        <DataField name="pay_3" optype="continuous" dataType="integer"/>
+        <DataField name="pay_4" optype="continuous" dataType="integer"/>
+        <DataField name="pay_5" optype="continuous" dataType="integer"/>
+        <DataField name="pay_6" optype="continuous" dataType="integer"/>
+    </DataDictionary>
+    <RegressionModel functionName="classification" normalizationMethod="logit">
+        <MiningSchema>
+            <MiningField name="next_month" usageType="target"/>
+            <MiningField name="pay_0"/>
+            <MiningField name="pay_2"/>
+            <MiningField name="pay_3"/>
+            <MiningField name="pay_4"/>
+            <MiningField name="pay_5"/>
+            <MiningField name="pay_6"/>
+        </MiningSchema>
+        <Output>
+            <OutputField name="pmml(prediction)" optype="categorical" dataType="integer" feature="predictedValue"/>
+            <OutputField name="prediction" optype="categorical" dataType="double" feature="transformedValue">
+                <MapValues outputColumn="data:output">
+                    <FieldColumnPair field="pmml(prediction)" column="data:input"/>
+                    <InlineTable>
+                        <row>
+                            <data:input>0</data:input>
+                            <data:output>0</data:output>
+                        </row>
+                        <row>
+                            <data:input>1</data:input>
+                            <data:output>1</data:output>
+                        </row>
+                    </InlineTable>
+                </MapValues>
+            </OutputField>
+            <OutputField name="probability(0)" optype="continuous" dataType="double" feature="probability" value="0"/>
+            <OutputField name="probability(1)" optype="continuous" dataType="double" feature="probability" value="1"/>
+        </Output>
+        <RegressionTable intercept="-1.3068491709149153" targetCategory="1">
+            <NumericPredictor name="pay_0" coefficient="0.12325947107501224"/>
+            <NumericPredictor name="pay_2" coefficient="0.18065053351842655"/>
+            <NumericPredictor name="pay_3" coefficient="0.06526988375539071"/>
+            <NumericPredictor name="pay_4" coefficient="0.10440956046307726"/>
+            <NumericPredictor name="pay_5" coefficient="0.03271040044767765"/>
+            <NumericPredictor name="pay_6" coefficient="0.10934943733103335"/>
+        </RegressionTable>
+        <RegressionTable intercept="0.0" targetCategory="0"/>
+    </RegressionModel>
+</PMML>
