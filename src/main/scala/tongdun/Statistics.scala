@@ -6,7 +6,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
-
+import org.apache.spark.ml.attribute._
 import scala.collection.mutable
 
 object Statistics {
@@ -84,6 +84,14 @@ object Statistics {
 
   }
 
+  def getNumClasses(labelSchema: StructField): Option[Int] = {
+    Attribute.fromStructField(labelSchema) match {
+      case binAttr: BinaryAttribute => Some(2)
+      case nomAttr: NominalAttribute => nomAttr.getNumValues
+      case _: NumericAttribute | UnresolvedAttribute => None
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     val inputPath = "file:///Users/pengyuan.li/Documents/code/xgboost_scala_demo/src/main/resources/Iris.csv"
     val spark = SparkSession
@@ -111,7 +119,9 @@ object Statistics {
       }
     println(instances.count())
     println(instances.first())
-
+//    计算标签的类别
+    println(getNumClasses(rawInput.schema("label")))
+//    计算数据分析
     val (summarizer, labelSummarizer) = {
       val seqOp = (c: (MultivariateOnlineSummarizer, MultiClassSummarizer), instance: MyInstance) =>
         (c._1.add(instance.features), c._2.add(instance.label, instance.weight))
@@ -132,6 +142,20 @@ object Statistics {
     histogram.foreach(println)
     println(numFeatures)
     println(numInvalid)
+    val featuresStd = summarizer.variance.toArray.map(math.sqrt)
+    val getFeaturesStd = (j: Int) => if (j >= 0 && j < 10 * numFeatures) {
+      featuresStd(j / 10)
+    } else {
+      0.0
+    }
+    println(getFeaturesStd)
+    val shouldApply = (idx: Int) => idx >= 0 && idx < numFeatures * 10
+    println(shouldApply(3))
+    val label_p = rawInput.rdd.mapPartitions(x=>x.map(r=>r.getAs[Double]("label"))).collect()
+
+    println(label_p)
+    val sepal_label = rawInput.rdd.mapPartitions(x=>x.map(r=>(r.getAs[Double]("sepal_length"), r.getAs[Double]("label")))).collect()
+    sepal_label.foreach(println)
   }
 
 
