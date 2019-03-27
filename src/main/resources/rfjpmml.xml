@@ -2,7 +2,7 @@
 <PMML xmlns="http://www.dmg.org/PMML-4_3" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.3">
     <Header>
         <Application name="JPMML-SparkML" version="1.4.6"/>
-        <Timestamp>2018-12-06T11:50:46Z</Timestamp>
+        <Timestamp>2019-01-11T07:14:00Z</Timestamp>
     </Header>
     <DataDictionary>
         <DataField name="next_month" optype="categorical" dataType="integer">
